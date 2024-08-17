@@ -1,5 +1,5 @@
-import RestaurantCard from "./RestaurantCard";
-import { useState } from "react"; /* This is named export */
+import RestaurantCard, {withPromotedLabel} from "./RestaurantCard";
+import { useContext, useState } from "react"; /* This is named export */
 import Shimmer from "./Shimmer"; /* This is default export */
 import { API_URL } from "../utils/constants";
 import { Link } from "react-router-dom";
@@ -16,7 +16,7 @@ const Body = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const isOnline = useOnline();
-
+  const DiscountedCardLabel = withPromotedLabel(RestaurantCard);
   if(!isOnline){
     return <UserOffline />
   }
@@ -82,7 +82,7 @@ const Body = () => {
                   key={restaurant?.info?.id}
                 >
                   {/* if we click on any restaurant card it will redirect to that restaurant menu page */}
-                  <RestaurantCard {...restaurant?.info} />
+                  <DiscountedCardLabel {...restaurant?.info} />
                 </Link>
               );
             }

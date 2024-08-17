@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 const useResMenuData = (
@@ -9,7 +8,7 @@ const useResMenuData = (
 ) => {
   const [restaurant, setRestaurant] = useState(null); // use useState to store restaurant data
   const [menuItems, setMenuItems] = useState([]); // use useState to store restaurant Menu Item data
-
+  const[categories, setCategories] = useState([]);
   useEffect(() => {
     getRestaurantInfo(); // call getRestaurantInfo function so it fetch api data and set data in restaurant state variable
   }, []);
@@ -31,33 +30,48 @@ const useResMenuData = (
             ?.info || null;
         setRestaurant(restaurantData);
 
-        // Set menu item data
-        const menuItemsData =
-          json?.data?.cards
-            .find((x) => x.groupedCard)
-            ?.groupedCard?.cardGroupMap?.REGULAR?.cards?.map(
-              (x) => x.card?.card
-            )
-            ?.filter((x) => x["@type"] == MENU_ITEM_TYPE_KEY)
-            ?.map((x) => x.itemCards)
-            .flat()
-            .map((x) => x.card?.info) || [];
+        // // Set menu item data
+        // const menuItemsData =
+        //   json?.data?.cards
+        //     .find((x) => x.groupedCard)
+        //     ?.groupedCard?.cardGroupMap?.REGULAR?.cards?.map(
+        //       (x) => x.card?.card
+        //     )
+        //     ?.filter((x) => x["@type"] == MENU_ITEM_TYPE_KEY)
+        //     ?.map((x) => x.itemCards)
+        //     .flat()
+        //     .map((x) => x.card?.info) || [];
 
-        const uniqueMenuItems = [];
-        menuItemsData.forEach((item) => {
-          if (!uniqueMenuItems.find((x) => x.id === item.id)) {
-            uniqueMenuItems.push(item);
-          }
-        });
-        setMenuItems(uniqueMenuItems);
+        //     console.log("Menu Items", menuItemsData);
+        // const uniqueMenuItems = [];
+        // menuItemsData.forEach((item) => {
+        //   if (!uniqueMenuItems.find((x) => x.id === item.id)) {
+        //     uniqueMenuItems.push(item);
+        //   }
+        // });
+        // console.log("Unique Items", uniqueMenuItems)
+        // setMenuItems(uniqueMenuItems);
+
+        //start
+        const categoriesData = json?.data?.cards
+          .find((x) => x.groupedCard)
+          ?.groupedCard?.cardGroupMap?.REGULAR?.cards?.map(
+            (x) => x.card?.card
+          )?.filter((x) => x["@type"] == MENU_ITEM_TYPE_KEY);
+
+          console.log("Categories data", categories);
+          setCategories(categoriesData);
+        //End
       }
     } catch (err) {
       setMenuItems([]);
       setRestaurant(null);
-      console.error(err);
+      setCategories([]);
+      //console.error(err);
     }
   }
-  return [restaurant, menuItems];
+
+  return [restaurant, categories];
 };
 
 export default useResMenuData;

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"; // import useParams for read `resId`
+import { useParams } from "react-router-dom"; // import useParams to read `resId`
 import {
   MENU_API_URL,
   IMG_CDN_URL,
@@ -8,19 +8,21 @@ import {
 } from "../utils/constants";
 import {MenuShimmer} from "./Shimmer";
 import useResMenuData from "../utils/useResMenuData"; // imported custom hook useResMenuData which gives restaurant Menu data from swigy api
-import useOnline from "../utils/useOnline"; // imported custom hook useOnline which checks user is online or not
+import useOnline from "../utils/useOnline"; // imported custom hook useOnline which checks if user is online or not
 import UserOffline from "./UserOffline";
+import RestaurantCategory from "./RestaurantCategory";
+import { useState } from "react";
 //import useRestaurantMenu from "../utils/userestaurantMenu";
 
 const RestaurantMenu = () => {
   const { resId } = useParams(); // call useParams and get value of restaurant id using object destructuring
-  const [restaurant, menuItems] = useResMenuData(
+  const [restaurant, category] = useResMenuData(
     MENU_API_URL,
     resId,
     RESTAURANT_TYPE_KEY,
     MENU_ITEM_TYPE_KEY
   );
-
+  const [showIndex, setShowIndex] = useState(null);
   const isOnline = useOnline();
 
   // if user is not Online then return UserOffline component
@@ -65,40 +67,19 @@ const RestaurantMenu = () => {
 
       <div className="restaurant-menu-content">
         <div className="menu-items-container">
-          <div className="menu-title-wrap">
-            <h3 className="menu-title">Recommended</h3>
-            <p className="menu-count">{menuItems.length} ITEMS</p>
-          </div>
-          <div className="menu-items-list">
-            {menuItems.map((item) => (
-              <div className="menu-item" key={item?.id}>
-                <div className="menu-item-details">
-                  <h3 className="item-title">{item?.name}</h3>
-                  <p className="item-cost">
-                    {item?.price > 0
-                      ? new Intl.NumberFormat("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                        }).format(item?.price / 100)
-                      : " "}
-                  </p>
-                  <p className="item-desc">{item?.description}</p>
-                </div>
-                <div className="menu-img-wrapper">
-                  {item?.imageId && (
-                    <img
-                      className="menu-item-img"
-                      src={ITEM_IMG_CDN_URL + item?.imageId}
-                      alt={item?.name}
-                    />
-                  )}
-                  <button className="add-btn"> ADD +</button>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
+      {/* Changes for category */}
+      {
+        category.map((c, index) => (
+          <RestaurantCategory 
+            key={c?.title} 
+            data={c}
+            showItems={index === showIndex ? true : false}
+            setShowIndex = {() => setShowIndex(index)}
+          />
+        ))
+      }
     </div>
   );
 };

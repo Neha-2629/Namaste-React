@@ -1,22 +1,24 @@
 
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import gourmetGlideLogo from "../../images/logo.png";
 import { Link } from "react-router-dom"; // imported Link for client side routing
 import { useNavigate } from "react-router-dom";
 import useAuth from "../utils/useAuth";
 import useLocalStorage from "../utils/useLocalStorage";
 import useOnline from "../utils/useOnline"; 
+import UserContext from "../utils/UserContext";
+import { useSelector } from "react-redux";
 
 // Title component for display logo
 const Title = () => (
-  <a href="/">
+  <Link to="/">
     <img
       className="logo"
       src={gourmetGlideLogo}
       alt="GourmetGLide Logo"
       title="GourmetGLide Logo"
     />
-  </a>
+  </Link>
 );
 
 // Header component for header section: Logo, Nav Items
@@ -28,15 +30,17 @@ const Header = () => {
  
   // call custom hook useAuth for user is loggedin or not
   const [isLoggedin, setIsLoggedin] = useAuth();
- 
+  const {loggedInUser} = useContext(UserContext);
   useEffect(() => {
     if(getLocalStorage === null){
       setIsLoggedin(false);
     }
     }, [getLocalStorage]);
   
-    
-  // call custom hook useOnline if user is online or not
+  //Subscribing to the store using a Selector
+  const cartItems = useSelector((store) => store.cart.items);
+  console.log(cartItems);
+  // call custom hook useOnline if user is  online or not
   const isOnline = useOnline();
  
   return (
@@ -61,7 +65,8 @@ const Header = () => {
           <Link to="/contact">Contact</Link>
         </li>
         <li>
-          <i className="fa-solid fa-cart-shopping"></i>
+          <Link to="/cart">Cart - ({cartItems.length} items)</Link>
+          {/* <i className="fa-solid fa-cart-shopping">({cartItems.length} items)</i> */}
         </li>
         <li>
           {/* use conditional rendering for login and logout */}
@@ -93,6 +98,7 @@ const Header = () => {
             </button>
           )}
         </li>
+        <li className="font-bold">{loggedInUser}</li>
       </ul>
     </div>
   </div>
